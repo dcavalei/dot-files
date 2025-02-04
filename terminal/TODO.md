@@ -1,0 +1,1 @@
+## Install script for wezterm

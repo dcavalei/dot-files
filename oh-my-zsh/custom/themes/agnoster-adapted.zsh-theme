@@ -49,7 +49,7 @@ prompt_end() {
 
 # Context: user@hostname (who am I and where am I)
 prompt_context() {
-  prompt_segment 008 010 "%(!.%{%F{yellow}%}.)%n"
+  prompt_segment cyan white "%(!.%{%F{yellow}%}.)%n"
 }
 
 # Git: branch/detached head, dirty status
@@ -67,9 +67,9 @@ prompt_git() {
     dirty=$(parse_git_dirty)
     ref=$(git symbolic-ref HEAD 2> /dev/null) || ref="➦ $(git rev-parse --short HEAD 2> /dev/null)"
     if [[ -n $dirty ]]; then
-      prompt_segment yellow black
+      prompt_segment red white
     else
-      prompt_segment 014 002
+      prompt_segment green white
     fi
 
     if [[ -e "${repo_path}/BISECT_LOG" ]]; then
@@ -153,11 +153,6 @@ prompt_hg() {
   fi
 }
 
-# Dir: current working directory
-prompt_dir() {
-  # prompt_segment 008 010 $(basename `pwd`) 
-}
-
 # Virtualenv: current working virtualenv
 prompt_virtualenv() {
   local env='';
@@ -171,8 +166,7 @@ prompt_virtualenv() {
   fi
 
   if [[ -n $env ]]; then
-    color=blue
-    prompt_segment $color $PRIMARY_FG
+    prompt_segment magenta white
     print -Pn " $(basename $env) "
   fi
 }
@@ -185,23 +179,24 @@ prompt_status() {
   symbols=()
   [[ $RETVAL -eq 0 ]] && symbols+="%{%F{green}%}✔" || symbols+="%{%F{red}%}✘"
   [[ $UID -eq 0 ]] && symbols+="%{%F{yellow}%}⚡"
-  [[ $(jobs -l | wc -l) -gt 0 ]] && symbols+="%{%F{cyan}%}⚙"
+  [[ $(jobs -l | wc -l) -gt 0 ]] && symbols+="%{%F{yellow}%}⚙"
 
-  [[ -n "$symbols" ]] && prompt_segment black default "$symbols"
+  [[ -n "$symbols" ]] && prompt_segment white default "$symbols"
 }
 
-prompt_head() {
-  echo "\r %{%F{8}%}[%64<..<%~%<<]"  # Print Dir.
+prompt_dir() {
+  local bg_color="%K{default}"  # Background color of the segment
+  local fg_color="%F{white}" # Foreground color of the segment
+  echo "%{$bg_color$fg_color%}%64<..<%~%<<%{$reset_color%}"
 }
 
 ## Main prompt
 build_prompt() {
   RETVAL=$?
-  prompt_head
+  prompt_dir
   prompt_status
   prompt_virtualenv
   prompt_context
-  # prompt_dir
   prompt_git
   prompt_bzr
   prompt_hg
@@ -209,3 +204,16 @@ build_prompt() {
 }
 
 PROMPT='%{%f%b%k%}$(build_prompt) '
+
+__conda_setup="$('/home/dcavalei/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/home/dcavalei/miniconda3/etc/profile.d/conda.sh" ]; then
+        . "/home/dcavalei/miniconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/home/dcavalei/miniconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+
