@@ -1,4 +1,4 @@
-#!/bin/env sh
+#!/bin/bash
 
 read -p "git user.name?  " name
 git config --global user.name "$name"

@@ -1,5 +1,11 @@
 #!/usr/bin/env sh
 
+set -e
+
+# Install plugins dependencies
+sudo apt update
+sudo apt install zsh fzf fonts-powerline bat
+
 # Install oh-my-zsh
 read -p "Install oh-my-zsh? [y/n]" input
 if [ "$input" = "y" ]; then
