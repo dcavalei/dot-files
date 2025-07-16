@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 read -p "git user.name?  " name
 git config --global user.name "$name"
 
